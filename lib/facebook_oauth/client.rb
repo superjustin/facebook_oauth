@@ -2,14 +2,18 @@ require 'facebook_oauth/objects'
 
 module FacebookOAuth
   class Client
-    
+
     def initialize(options = {})
       @application_id = options[:application_id]
       @application_secret = options[:application_secret]
       @callback = options[:callback]
       @token = options[:token]
     end
-  
+
+    def authorized?
+      ! @access_token.nil?
+    end
+
     def authorize_url(options = {})
       options[:scope] ||= 'offline_access,publish_stream'
       consumer.web_server.authorize_url(
@@ -17,7 +21,7 @@ module FacebookOAuth
         :scope => options[:scope]
       )
     end
-    
+
     def authorize(options = {})
       @access_token ||= consumer.web_server.get_access_token(
         options[:code],
@@ -26,7 +30,7 @@ module FacebookOAuth
       @token = @access_token.token
       @access_token
     end
-    
+
     private
       def consumer
         @consumer ||= OAuth2::Client.new(
@@ -39,7 +43,7 @@ module FacebookOAuth
       def access_token
         OAuth2::AccessToken.new(consumer, @token)
       end
-      
+
       def _get(url)
         oauth_response = access_token.get(url)
         JSON.parse(oauth_response)
@@ -56,4 +60,4 @@ module FacebookOAuth
       end
   end
 end
-   
+
