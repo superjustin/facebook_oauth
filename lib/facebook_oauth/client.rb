@@ -10,16 +10,14 @@ module FacebookOAuth
       @token = options[:token]
     end
 
-    def authorized?
-      ! @access_token.nil?
+    def authorize_url(options = {})
+      consumer.web_server.authorize_url(
+        {:redirect_uri => options.delete(:callback) || @callback}.merge!(options)
+      )
     end
 
-    def authorize_url(options = {})
-      options[:scope] ||= 'offline_access,publish_stream'
-      consumer.web_server.authorize_url(
-        :redirect_uri => options[:callback] || @callback,
-        :scope => options[:scope]
-      )
+    def authorized?
+      ! @access_token.nil?
     end
 
     def authorize(options = {})
