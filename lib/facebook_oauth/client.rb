@@ -11,6 +11,7 @@ module FacebookOAuth
     end
 
     def authorize_url(options = {})
+      options[:scope] ||= 'offline_access,publish_stream'
       consumer.web_server.authorize_url(
         {:redirect_uri => options.delete(:callback) || @callback}.merge!(options)
       )
